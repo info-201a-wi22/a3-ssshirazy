@@ -10,6 +10,7 @@ library("dplyr")
 library("stringr")
 library("tidyverse")
 library("ggplot2")
+library("maps")
 
 # Load the *incarceration trends* data into a variable. `incarceration_data`
 file_name <- "https://raw.githubusercontent.com/vera-institute/incarceration-trends/master/incarceration_trends.csv"
@@ -36,7 +37,7 @@ difference_1970_2018 <- incarceration_data %>%
   summarize(difference = yearly_pop[2] - yearly_pop[1])
 print(difference_1970_2018)
 
-# What is the average percent of Black people in jail?
+# What is the average percent of Black people in jail (from 1970-2018)?
 percent_black_jail <- incarceration_data %>%
   group_by(year) %>%
   summarize(tot_jail_pop = sum(total_jail_pop, na.rm = TRUE), 
@@ -47,7 +48,7 @@ percent_black_jail <- incarceration_data %>%
   pull(percent)
 print(percent_black_jail)
 
-# What is the average percent of White people in jail? 
+# What is the average percent of White people in jail (from 1978-2018)? 
 percent_white_jail <- incarceration_data %>%
   group_by(year) %>%
   summarize(tot_jail_pop = sum(total_jail_pop, na.rm = TRUE), 
@@ -57,8 +58,6 @@ percent_white_jail <- incarceration_data %>%
   mutate(percent = ave_white_jail * 100 / ave_jail_pop) %>%
   pull(percent)
 print(percent_white_jail)
-
-# What
 
 # Chart Number 1
 get_percents <- incarceration_data %>%
@@ -83,9 +82,9 @@ View(get_percents)
 ggplot(data = get_percents) +
   geom_area(
     mapping = aes(x = year, y = population, fill = race)
-) +
+    ) +
   labs (
-    title = "Population of people in jail by race",
+    title = "Population of people in jail by race in Texas",
     subtitle = "from the years: 1985 to 2018",
     fill = "Race",
     x = "Year",
@@ -93,34 +92,38 @@ ggplot(data = get_percents) +
   )
 
 # Chart Number two
+fem_percent <- incarceration_data %>%
+  select(female_prison_adm, black_female_prison_adm, white_female_prison_adm) %>%
+  gather(key =  race, value = admission_rate, -female_prison_adm)
+View(fem_percent)
 
-# Map !
+ggplot(fem_percent) +
+  geom_point(mapping = aes(y = female_prison_adm, x = admission_rate, color = race))
 
-map_stuffs <- incarceration_data %>%
-  select(total_jail_pop, black_jail_pop, year, state) %>%
-  replace_na(list(total_jail_pop = 0)) %>%
-  replace_na(list(black_jail_pop = 0)) %>%
+# Map
+
+black_jail_percent <- incarceration_data %>%
+  select(total_jail_pop, black_jail_pop, year, state, fips) %>%
   filter(year == 2012) %>%
-  group_by(state) %>%
-  mutate(
-    percent_black_in_jail = black_jail_pop * 100 / total_jail_pop
-    ) %>%
-  summarize(ave_percent = mean(percent_black_in_jail, na.rm = TRUE))
-View(map_stuffs)
+  group_by(fips) %>%
+  summarize(percent_black_in_jail = black_jail_pop * 100 / total_jail_pop) %>%
+  filter(percent_black_in_jail <= 100.000)
 
-# Load a shapefile of U.S. states using ggplot's `map_data()` function
-state_shape <- map_data("state")
+# Load a shapefile of U.S. counties using ggplot's `map_data()` function
+state_shape <- map_data("county") %>%
+  unite(polyname, region, subregion, sep = ",") %>%
+  left_join(county.fips, by = "polyname")
+View(state_shape)
 
-# Create a blank map of U.S. states
-ggplot(state_shape) +
+# Join `black_jail_percent` data to the U.S. shapefile
+joined_df <- state_shape %>%
+  left_join(black_jail_percent, by = "fips")
+
+# Draw the map setting the `fill` of each county using their Black percent
+ggplot(joined_df) +
   geom_polygon(
-    mapping = aes(x = long, y = lat, group = group),
-    color = "white", # show state outlines
-    size = .1        # thinly stroked
+    mapping = aes(x = long, y = lat, group = group, fill = percent_black_in_jail),
+    size = .1
   ) +
   coord_map() # use a map-based coordinate system
-  
-state_shape <- map_data("state") %>%
-  mutate(state = region) %>%
-  left_join(map_stuffs, by = "state")
-View(state_shape)
+
