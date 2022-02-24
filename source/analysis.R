@@ -151,8 +151,7 @@ ggplot(jail_capacity_and_pop) +
     x = "Total jail population",
     y = "Jail rated capacity"
   )
-
-ggplot(jail_capacity_and_pop) +
+comparison_chart <- ggplot(jail_capacity_and_pop) +
   geom_point(
     mapping = aes(x = jail_rated_capacity, y = total_jail_pop),
     color = "Blue"
@@ -203,7 +202,7 @@ blank_theme <- theme_bw() +
   )
 
 # Draw the map setting the `fill` of each county using their Black percent
-ggplot(joined_df) +
+map_chart <- ggplot(joined_df) +
   geom_polygon(
     mapping = aes(x = long, y = lat, group = group,
                   fill = percent_black_in_jail),
@@ -212,7 +211,7 @@ ggplot(joined_df) +
   labs(
     fill = "Percent (%)",
     title = "2018: Percent of Black people in jail
-    versus the population in the U.S."
+    versus the total jail population in the U.S."
   ) +
   scale_fill_continuous(low = "#93E278", high = "#9955DD") +
   coord_map() + # use a map-based coordinate system
