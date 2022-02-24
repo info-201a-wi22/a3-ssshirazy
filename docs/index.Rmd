@@ -6,13 +6,10 @@ output: html_document
 ---
 
 ``` {r setup, include = FALSE}
-library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(error = TRUE)
-knitr::opts_chunk$set(cache = TRUE)
 ```
 
-``` {r source, include = FALSE}
+``` {r, include = FALSE}
 source("../source/analysis.R")
 ```
 
@@ -30,16 +27,16 @@ by `r difference_1970_2018`. The highest jail rated capacity was
 `r highest_jrc`. 
 
 ### Time Trend Title
-```{r time_trend_chart, echo = FALSE}
+```{r, echo = FALSE}
 plot(time_trend_chart)
 ```
 
 ### Comparison Chart Title
-```{r comparison, echo = FALSE}
-#plot(comparison_chart)
+```{r, echo = FALSE}
+plot(comparison_chart)
 ```
 
 ### Map Title
-```{r map, echo = FALSE}
-#plot(map_chart)
+```{r, echo = FALSE}
+plot(map_chart)
 ```
