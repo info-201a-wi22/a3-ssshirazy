@@ -2,7 +2,7 @@
 # Assignment 3: Data Visualization (incarceration) (INFO-201, Winter 2022)
 
 # Set up working directory
-#setwd("C:/Users/Samira Shirazy/Desktop/Assessments/a3-ssshirazy")
+setwd("C:/Users/Samira Shirazy/Desktop/Assessments/a3-ssshirazy/docs")
 #getwd()
 
 # Load the necessary packages 
@@ -161,6 +161,7 @@ comparison_chart <- ggplot(jail_capacity_and_pop) +
     x = "Jail rated capacity",
     y = "Total jail population"
   )
+plot(comparison_chart)
 
 # Map
 
@@ -216,3 +217,4 @@ map_chart <- ggplot(joined_df) +
   scale_fill_continuous(low = "#93E278", high = "#9955DD") +
   coord_map() + # use a map-based coordinate system
   blank_theme
+plot(map_chart)
