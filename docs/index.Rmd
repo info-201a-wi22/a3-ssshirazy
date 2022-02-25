@@ -7,6 +7,7 @@ output: html_document
 
 ``` {r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_chunk$set(eval = FALSE)
 ```
 
 ``` {r, include = FALSE}
@@ -30,13 +31,46 @@ by `r difference_1970_2018`. The highest jail rated capacity was
 ```{r, echo = FALSE}
 plot(time_trend_chart)
 ```
+This chart displays the jail population distribution with regards to the major
+racial groups. The three that make up the most are: White, Black, and Latinx.
+Following the trend of these three show that the proportion that each of these
+racial groups make out of the total jail population has stay pretty consistent
+in this timeline. Even around the year 1992-1993, their peaks align with one
+another. 
 
 ### Comparison Chart Title
 ```{r, echo = FALSE}
 plot(comparison_chart)
 ```
 
+This scatter plot compares the jail rated capacity to the actual amount of 
+inmates in the jail. Jail rated capacity refers to the number of beds the 
+facility has to house all the inmates. The importance of this chart is to show
+the crowdedness in jails. As I examined the chart, I noticed that there were
+some jails that were severely overpopulated. For example, there was a jail with 
+a capacity of 15,000, but have a population of a little more than 25,000. 
+That's a difference of 10,000 people. It makes me question, how bad are the
+living conditions there? This chart also can spark the conversation of morality
+within the jail system. Regardless of the crime commited, it is not right that
+some of these jails are over capacity. This could be dangerous for numerous
+reasons. For example: are there enough police staffed in proportion to the
+population of inmates? What about the spread of diseases, as highly populated
+but small spaces can be a breeding ground for that. Bad living conditions can
+worsen the mood of inmates, leading to more fights and outrages that could have
+been solved if the occupancy was less than the intended capacity. 
+
 ### Map Title
 ```{r, echo = FALSE}
 plot(map_chart)
 ```
+
+This is a map of the United States and shows the proportion of jail inmates
+that are Black from 2018. It is important to have a visualization that shows the
+disparities between the counties. According to the U.S. census, the population
+of Black people in America was 14.7% (source). As we examine the map, we can see
+areas where the disparities take place. Despite being a little more than ten 
+percent of the population, the south east area has a disproportionately high
+percent of Black people in jail. It is very purple, which represents percents 
+anywhere from 40-100. A pattern that emerges is that the eastern side of the
+U.S. has a higher percent of Black people in jail compared to the west. More 
+specifically, the south east. 
