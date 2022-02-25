@@ -14,7 +14,6 @@ knitr::opts_chunk$set(echo = TRUE)
 source("../source/analysis.R")
 ```
 
-
 ## Overview
 This is a report regarding incarceration data for each state in the United
 States from 1970 to 2018. 
@@ -31,6 +30,7 @@ by `r difference_1970_2018`. The highest jail rated capacity was
 ```{r, echo = FALSE}
 plot(time_trend_chart)
 ```
+
 This chart displays the jail population distribution with regards to the major
 racial groups. The three that make up the most are: White, Black, and Latinx.
 Following the trend of these three show that the proportion that each of these

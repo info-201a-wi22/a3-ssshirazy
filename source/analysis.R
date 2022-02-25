@@ -3,7 +3,6 @@
 
 # Set up working directory
 setwd("C:/Users/Samira Shirazy/Desktop/Assessments/a3-ssshirazy/docs")
-#getwd()
 
 # Load the necessary packages 
 library("dplyr")
@@ -35,7 +34,7 @@ difference_1970_2018 <- incarceration_data %>%
   group_by(year) %>%
   summarize(yearly_pop = sum(total_jail_pop, na.rm = TRUE)) %>%
   summarize(difference = yearly_pop[2] - yearly_pop[1])
-View(difference_1970_2018)
+print(difference_1970_2018)
 
 # 3a. What is the average percent of Black people in jail (from 1970-2018)?
 percent_black_jail <- incarceration_data %>%
