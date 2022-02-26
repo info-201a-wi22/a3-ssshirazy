@@ -4,7 +4,7 @@
 # Set up working directory
 setwd("C:/Users/Samira Shirazy/Desktop/Assessments/a3-ssshirazy/docs")
 
-# Load the necessary packages 
+# Load the necessary packages
 library("dplyr")
 library("stringr")
 library("tidyverse")
@@ -13,8 +13,10 @@ library("maps")
 
 # Load the *incarceration trends* data into a variable. `incarceration_data`
 file_name <- "https://raw.githubusercontent.com/vera-institute/incarceration-trends/master/incarceration_trends.csv"
-incarceration_data <- read.csv(file_name, header = TRUE, 
+incarceration_data <- read.csv(file_name, header = TRUE,
                                stringsAsFactors = FALSE)
+# turn off scientific
+options(scipen = 100)
 
 # View the data
 View(incarceration_data)
@@ -22,43 +24,49 @@ View(incarceration_data)
 # Print the column names of the dataset
 print(colnames(incarceration_data))
 
-# 1. What year was jail_rated_capacity the highest and what was the value?
+# 1. What year was jail_rated_capacity the highest (`highest_jrc_year`)
+# and what was the value (`highest_jrc_value`)?
 highest_jrc <- incarceration_data %>%
   filter(jail_rated_capacity == max(jail_rated_capacity, na.rm = TRUE)) %>%
   select(jail_rated_capacity, year)
-print(highest_jrc)
+highest_jrc_year <- highest_jrc$year
+highest_jrc_value <- round(highest_jrc$jail_rated_capacity, 2)
 
 # 2. What is the difference between `total_jail_pop` in 1970 to 2018?
+# `difference_1970_2018`
 difference_1970_2018 <- incarceration_data %>%
   filter(year == 2018 | year == 1970) %>%
   group_by(year) %>%
   summarize(yearly_pop = sum(total_jail_pop, na.rm = TRUE)) %>%
   summarize(difference = yearly_pop[2] - yearly_pop[1])
-print(difference_1970_2018)
+difference_1970_2018 <- round(difference_1970_2018, 2)
 
 # 3a. What is the average percent of Black people in jail (from 1970-2018)?
+# `percent_black_jail`
 percent_black_jail <- incarceration_data %>%
   group_by(year) %>%
-  summarize(tot_jail_pop = sum(total_jail_pop, na.rm = TRUE), 
+  summarize(tot_jail_pop = sum(total_jail_pop, na.rm = TRUE),
             tot_black_prison_pop = sum(black_jail_pop, na.rm = TRUE)) %>%
-  summarize(ave_jail_pop = mean(tot_jail_pop, na.rm = TRUE), 
+  summarize(ave_jail_pop = mean(tot_jail_pop, na.rm = TRUE),
             ave_black_jail = mean(tot_black_prison_pop, na.rm = TRUE)) %>%
-  mutate(percent = ave_black_jail * 100 / ave_jail_pop)
-print(percent_black_jail)
+  mutate(percent = ave_black_jail * 100 / ave_jail_pop) %>%
+  pull(percent)
+percent_black_jail <- round(percent_black_jail, 2)
 
-# 3b. What is the average percent of White people in jail (from 1978-2018)? 
+# 3b. What is the average percent of White people in jail (from 1978-2018)?
+# `percent_white_jail`
 percent_white_jail <- incarceration_data %>%
   group_by(year) %>%
-  summarize(tot_jail_pop = sum(total_jail_pop, na.rm = TRUE), 
+  summarize(tot_jail_pop = sum(total_jail_pop, na.rm = TRUE),
             tot_white_prison_pop = sum(white_jail_pop, na.rm = TRUE)) %>%
-  summarize(ave_jail_pop = mean(tot_jail_pop, na.rm = TRUE), 
+  summarize(ave_jail_pop = mean(tot_jail_pop, na.rm = TRUE),
             ave_white_jail = mean(tot_white_prison_pop, na.rm = TRUE)) %>%
   mutate(percent = ave_white_jail * 100 / ave_jail_pop) %>%
   pull(percent)
-print(percent_white_jail)
+percent_white_jail <- round(percent_white_jail, 2)
   
-# 4: What have been the highest incarceration rates for Black and White 
-# people in 2016?
+# 4: What have been the highest incarceration rates for Black
+# (black_highest_2000) and White (`white_highest_2000`) people in 2000?
  
   # 4a. First step: Calculate Incarceration rates
   
@@ -80,8 +88,8 @@ white_incarceration <- incarceration_data %>%
   mutate(white_incar_rate = white_prison_jail * 100000 / white_pop_15to64)
 View(white_incarceration)
 
-  # 4b. Second Step: Wrangle data to find the highest incarceration 
-  
+# 4b. Second Step: Wrangle data to find the highest incarceration
+
   # Black people
 black_highest_2000 <- black_incarceration %>%
   filter(year == 2000) %>%
@@ -96,10 +104,10 @@ white_highest_2000 <- white_incarceration %>%
   pull(white_incar_rate)
 print(white_highest_2000)
 
-# Chart Number 1
+# Chart Number 1: Jail population of each race from 1985 to 2018
 
-# Find the total population of each racial group in jail in Texas from 1985 
-# to 2016
+# Find the total population of each racial group in jail in Texas from 1985
+# to 2018
 get_percents <- incarceration_data %>%
   select(year, state, total_jail_pop, aapi_jail_pop, native_jail_pop,
          black_jail_pop, white_jail_pop, other_race_jail_pop,
@@ -108,34 +116,34 @@ get_percents <- incarceration_data %>%
   group_by(year) %>%
   summarize(
     all_tot = sum(total_jail_pop, na.rm = TRUE),
-    native_tot = sum(native_jail_pop, na.rm = TRUE),
-    aapi_tot = sum(aapi_jail_pop, na.rm = TRUE),
-    black_tot = sum(black_jail_pop, na.rm = TRUE),
-    white_tot = sum(white_jail_pop, na.rm = TRUE),
-    latinx_tot = sum(latinx_jail_pop, na.rm = TRUE),
-    other_tot = sum(other_race_jail_pop, na.rm = TRUE)
+    Native = sum(native_jail_pop, na.rm = TRUE),
+    AAPI = sum(aapi_jail_pop, na.rm = TRUE),
+    Black = sum(black_jail_pop, na.rm = TRUE),
+    White = sum(white_jail_pop, na.rm = TRUE),
+    Latinx = sum(latinx_jail_pop, na.rm = TRUE),
+    Other = sum(other_race_jail_pop, na.rm = TRUE)
   ) %>%
   gather(key = race, value = population, -year, -all_tot) %>%
   filter(year >= 1985)
 View(get_percents)
 
-# Draw the map setting the `fill` based off of the racial groups
+# Draw the chart setting the `fill` based off of the racial groups
 time_trend_chart <- ggplot(data = get_percents) +
   geom_area(
     mapping = aes(x = year, y = population, fill = race)
     ) +
-  labs (
+  labs(
     title = "Population of people in jail by race in Texas",
-    subtitle = "from the years: 1985 to 2016",
+    subtitle = "from the years: 1985 to 2018",
     fill = "Race",
     x = "Year",
     y = "Population"
   )
 plot(time_trend_chart)
 
-# Chart Number Two
+# Chart Number Two: Comparing total jail population vs jail rated capacity
 
-# Select the `jail_rated_capacity` and `total_jail_pop` from the 
+# Select the `jail_rated_capacity` and `total_jail_pop` from the
 # `incarceration_data` data frame to help create chart.
 jail_capacity_and_pop <- incarceration_data %>%
   select(jail_rated_capacity, total_jail_pop)
@@ -150,6 +158,8 @@ ggplot(jail_capacity_and_pop) +
     x = "Total jail population",
     y = "Jail rated capacity"
   )
+
+# Draw the chart
 comparison_chart <- ggplot(jail_capacity_and_pop) +
   geom_point(
     mapping = aes(x = jail_rated_capacity, y = total_jail_pop),
@@ -162,13 +172,12 @@ comparison_chart <- ggplot(jail_capacity_and_pop) +
   )
 plot(comparison_chart)
 
-# Map
+# Map: Percent of Black population in jail in 2018
 
 # Calculate the percent of Black people in jail over the whole Black population
   # `percent_black_in_jail` for the year 2018.
 # Filter out any values that are greater than 100% because it wouldn't make
 # sense for there to be more Black people in jail than the whole population
-
 black_jail_percent <- incarceration_data %>%
   select(total_jail_pop, black_jail_pop, year, fips) %>%
   filter(year == 2018) %>%
